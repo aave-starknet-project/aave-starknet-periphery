@@ -1,0 +1,19 @@
+["protostar.config"]
+protostar_version = "0.2.3"
+
+["protostar.project"]
+libs_path = "lib"
+
+["protostar.contracts"]
+rewards_controller = [
+    "./contracts/rewards/base/rewards_controller.cairo",
+]
+emission_manager = [
+    "./contracts/rewards/base/emission_manager.cairo",
+]
+rewards_distributor = [
+    "./contracts/rewards/base/rewards_distributor.cairo",
+]
+
+["protostar.shared_command_configs"]
+cairo_path = ["./lib/cairo_contracts/src"]
