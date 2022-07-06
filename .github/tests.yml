@@ -1,0 +1,34 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.7"]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Protostar
+        shell: bash
+        run: |
+          curl -L https://raw.githubusercontent.com/software-mansion/protostar/master/install.sh | bash
+
+      - name: Install submodules
+        shell: bash
+        run: |
+          export PATH="$PATH:/home/runner/.protostar/dist/protostar" && protostar install
+      - name: Build
+        shell: bash
+        run: |
+          export PATH="$PATH:/home/runner/.protostar/dist/protostar" && protostar build
+
+      - name: Run tests
+        run: |
+          export PATH="$PATH:/home/runner/.protostar/dist/protostar" && protostar test ./tests
