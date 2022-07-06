@@ -5,32 +5,8 @@ from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.bool import TRUE
 from starkware.starknet.common.syscalls import get_caller_address
 from contracts.rewards.base.rewards_distributor import RewardsDistributor
-
-@storage_var
-func distribution_manager() -> (address : felt):
-end
-
-@storage_var
-func reward_token() -> (address : felt):
-end
-
-@storage_var
-func _authorized_claimers(address : felt) -> (address : felt):
-end
-
-# only authorized claimers
-
-func only_authorized_claimers{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-        claimer : felt, user : felt):
-    let (claimer_) = _authorized_claimers.read(user)
-    with_attr error_message("Claimer not authorized"):
-        assert claimer_ = claimer
-    end
-    return ()
-end
-
-# only emission manager
-
+from contracts.rewards.base.rewards_controller_library import RewardsController
+from contracts.types.rewards_data import RewardsDataTypes
 func only_emission_manager{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}():
     let (emission_manager_) = RewardsDistributor.get_emission_manager()
     with_attr error_message("Only emission manager"):
@@ -38,19 +14,6 @@ func only_emission_manager{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, ran
         assert caller = emission_manager_
     end
     return ()
-end
-
-# events
-@event
-func rewards_claimed(user : felt, to : felt, claimer : felt, amount : felt):
-end
-
-@event
-func rewards_accrued(user : felt, amount : felt):
-end
-
-@event
-func claimer_set(claimer : felt):
 end
 
 @constructor
@@ -64,6 +27,7 @@ func hande_action{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_
         reward_token_ : felt, distribution_manager_ : felt):
     return ()
 end
+
 @external
 func claim_rewards{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
         assets_len, assets : felt*, to : felt):
@@ -75,7 +39,7 @@ end
 @external
 func claim_rewards_on_behalf{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
         assets_len, assets : felt*, amount : felt, user : felt, to : felt):
-    # _claim_rewards()
+    # RewardsController.claim_rewards()
     return ()
 end
 
@@ -93,11 +57,44 @@ func get_rewards_balance{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range
     return ()
 end
 
+@view
+func get_reward_oracle{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
+        reward_address) -> (oracle_address):
+    let (oracle_address) = RewardsController.get_reward_oracle(reward_address)
+    return (oracle_address)
+end
+@view
+func get_transfer_strategy{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
+        reward_address) -> (transfer_strategy_address):
+    let (transfer_strategy_address) = RewardsController.get_transfer_strategy(reward_address)
+    return (transfer_strategy_address)
+end
+
 @external
 func set_claimer{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
         user : felt, caller : felt):
     only_emission_manager()
-    _authorized_claimers.write(user, caller)
+    RewardsController.set_claimer(user, caller)
+
+    return ()
+end
+
+@external
+func set_rewards_oracle{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
+        reward : felt, oracle : felt):
+    only_emission_manager()
+    RewardsController.set_reward_oracle(reward, oracle)
+
+    return ()
+end
+
+@external
+func configure_assets{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
+        config_len, config : RewardsDataTypes.RewardsConfigInput*):
+    only_emission_manager()
+    # TODO: implement internal configAssets on rewards_distributor==>takes config as arg
+
+    RewardsDistributor.configure_assets(config_len, config)
 
     return ()
 end
@@ -105,7 +102,7 @@ end
 @view
 func get_claimer{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
         user : felt) -> (claimer : felt):
-    let (claimer) = _authorized_claimers.read(user)
+    let (claimer) = RewardsController.get_claimer(user)
     return (claimer)
 end
 
@@ -114,19 +111,4 @@ func get_emission_manager{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, rang
         emission_manager_ : felt):
     let (emission_manager) = RewardsDistributor.get_emission_manager()
     return (emission_manager)
-end
-
-@view
-func get_reward_token{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}() -> (
-        reward_token_ : felt):
-    let (reward_token_) = reward_token.read()
-    return (reward_token_)
-end
-
-# internals
-func _claim_rewards{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-        assets : felt*, amount : felt, claimer : felt, user : felt, to : felt):
-    # TODO
-
-    return ()
 end

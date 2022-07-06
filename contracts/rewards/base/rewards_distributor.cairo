@@ -32,14 +32,6 @@ namespace RewardsDistributor:
 
     func configure_assets{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
             config_input_len, config_input : RewardsDataTypes.RewardsConfigInput*):
-        if config_input_len == 0:
-            return ()
-        end
-
-        return configure_assets(
-            config_input_len=config_input_len - 1,
-            config_input=config_input + RewardsDataTypes.RewardsConfigInput.SIZE)
-
         return ()
     end
 end
