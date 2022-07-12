@@ -18,5 +18,6 @@ namespace IEmissionManager:
     end
     func get_rewards_controller() -> (rewards_controller_ : felt):
     end
-    func get_emission_admin() -> (emission_admin_ : felt)
+    func get_emission_admin() -> (emission_admin_ : felt):
+    end
 end

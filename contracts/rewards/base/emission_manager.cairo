@@ -30,8 +30,8 @@ end
 
 @constructor
 func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-    owner : felt
-    rewards_controller : felt,
+    owner : felt,
+    rewards_controller : felt
 ):
     Ownable.initializer(owner)
     _rewards_controller.write(rewards_controller)
@@ -39,32 +39,37 @@ func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_p
 end
 
 @external
-func configure_assets{syscall_ptr : felt*, pendersen_ptr : HashBuiltin*, range_check_ptr}():
+func configure_assets{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}():
     # TODO
+    return()
 end
 
 @external
-func set_transfer_strategy{syscall_ptr : felt*, pendersen_ptr : HashBuiltin*, range_check_ptr}():
+func set_transfer_strategy{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}():
     # TODO
+    return()
 end
 
 @external
-func set_reward_oracle{syscall_ptr : felt*, pendersen_ptr : HashBuiltin*, range_check_ptr}():
+func set_reward_oracle{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}():
     # TODO
+    return()
 end
 
 @external
-func set_emission_per_second{syscall_ptr : felt*, pendersen_ptr : HashBuiltin*, range_check_ptr}():
+func set_emission_per_second{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}():
     # TODO
+    return()
 end
 
 @external
 func set_claimer{}():
     # TODO
+    return()
 end
 
 @external
-func set_rewards_controller{syscall_ptr : felt*, pendersen_ptr : HashBuiltin*, range_check_ptr}(
+func set_rewards_controller{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
     rewards_controller_ : felt
 ):
     Ownable.assert_only_owner()

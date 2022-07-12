@@ -2,9 +2,9 @@
 
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 
-from contracts.interfaces.i_emission_manager import IRewardsController
+from contracts.interfaces.i_emission_manager import IEmissionManager
 
-const ONWER = 111
+const OWNER = 111
 const REWARDS_CONTROLLER = 222
 const EMISSION_ADMIN = 333
 
