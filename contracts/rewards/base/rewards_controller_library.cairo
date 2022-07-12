@@ -31,6 +31,7 @@ end
 @event
 func claimer_set(claimer : felt):
 end
+
 @event
 func transfer_strategy_installed(reward_address, transfer_strategy_address):
 end
@@ -84,6 +85,7 @@ namespace RewardsController:
         reward_oracle.write(reward, oracle)
         return ()
     end
+
     func set_claimer{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
             claimer, user):
         authorized_claimers.write(claimer, user)

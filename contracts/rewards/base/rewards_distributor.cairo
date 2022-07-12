@@ -29,7 +29,6 @@ namespace RewardsDistributor:
 
     # @dev Configure the assets for a specific emission
     # @param assetsConfigInput The array of each asset configuration
-
     func configure_assets{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
             config_input_len, config_input : RewardsDataTypes.RewardsConfigInput*):
         return ()

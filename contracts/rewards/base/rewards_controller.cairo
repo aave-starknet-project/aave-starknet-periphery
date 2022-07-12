@@ -7,6 +7,7 @@ from starkware.starknet.common.syscalls import get_caller_address
 from contracts.rewards.base.rewards_distributor import RewardsDistributor
 from contracts.rewards.base.rewards_controller_library import RewardsController
 from contracts.types.rewards_data import RewardsDataTypes
+
 func only_emission_manager{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}():
     let (emission_manager_) = RewardsDistributor.get_emission_manager()
     with_attr error_message("Only emission manager"):
@@ -22,8 +23,9 @@ func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_p
     RewardsDistributor.set_emission_manager(emission_manager_)
     return ()
 end
+
 @external
-func hande_action{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
+func handle_action{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
         reward_token_ : felt, distribution_manager_ : felt):
     return ()
 end
@@ -63,6 +65,7 @@ func get_reward_oracle{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_c
     let (oracle_address) = RewardsController.get_reward_oracle(reward_address)
     return (oracle_address)
 end
+
 @view
 func get_transfer_strategy{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
         reward_address) -> (transfer_strategy_address):
@@ -93,7 +96,6 @@ func configure_assets{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_ch
         config_len, config : RewardsDataTypes.RewardsConfigInput*):
     only_emission_manager()
     # TODO: implement internal configAssets on rewards_distributor==>takes config as arg
-
     RewardsDistributor.configure_assets(config_len, config)
 
     return ()
