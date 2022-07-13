@@ -3,6 +3,8 @@
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.starknet.common.syscalls import get_caller_address
 
+from contracts.interfaces.i_rewards_controller import IRewardsController
+
 from openzeppelin.access.ownable import Ownable
 
 @storage_var
@@ -41,6 +43,7 @@ end
 @external
 func configure_assets{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}():
     # TODO
+    # Needs an oracle.
     return()
 end
 
@@ -63,8 +66,13 @@ func set_emission_per_second{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, r
 end
 
 @external
-func set_claimer{}():
-    # TODO
+func set_claimer{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
+    _user : felt, 
+    _claimer : felt
+):
+    Ownable.assert_only_owner()
+    let (reward_controller_address) = _rewards_controller.read()
+    IRewardsController.set_claimer(contract_address=reward_controller_address, user = _user, claimer = _claimer)
     return()
 end
 
@@ -81,12 +89,13 @@ end
 
 @external
 func set_emission_admin{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-    reward : felt, admin: felt
+    reward : felt, admin : felt
 ):
     Ownable.assert_only_owner()
-    let (old_admin) = _emission_admins.read(reward)
+    let (_old_admin) = _emission_admins.read(reward)
     # Check that is valid address? Check that it is not address zero?
     _emission_admins.write(reward, admin)
+    emission_admin_updated.emit(old_admin = _old_admin, new_admin = admin)
     return()
 end
 

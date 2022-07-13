@@ -10,14 +10,15 @@ namespace IEmissionManager:
     end
     func set_emission_per_second():
     end
-    func set_claimer():
+    func set_claimer(_user : felt, _claimer : felt):
     end
+    # Ask why it was done this way. (underscore)
     func set_rewards_controller(rewards_controller_ : felt):
     end
     func set_emission_admin(reward : felt, admin: felt):
     end
     func get_rewards_controller() -> (rewards_controller_ : felt):
     end
-    func get_emission_admin() -> (emission_admin_ : felt):
+    func get_emission_admin(reward : felt) -> (emission_admin_ : felt):
     end
 end
