@@ -92,10 +92,10 @@ func set_emission_admin{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_
     reward : felt, admin : felt
 ):
     Ownable.assert_only_owner()
-    let (_old_admin) = _emission_admins.read(reward)
+    let (old_admin) = _emission_admins.read(reward)
     # Check that is valid address? Check that it is not address zero?
     _emission_admins.write(reward, admin)
-    emission_admin_updated.emit(old_admin=_old_admin, new_admin=admin)
+    emission_admin_updated.emit(old_admin=old_admin, new_admin=admin)
     return ()
 end
 

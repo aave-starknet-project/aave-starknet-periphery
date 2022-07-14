@@ -8,15 +8,13 @@ const OWNER = 111
 const REWARDS_CONTROLLER = 222
 const EMISSION_ADMIN = 333
 const EMISSION_MANAGER = 444
-const REWARD_1 = 555
-const REWARD_2 = 666
 
 @view
 func __setup__{syscall_ptr : felt*, range_check_ptr}():
     %{
-        context.emission_manager = deploy_contract("./contracts/rewards/base/emission_manager.cairo", [ids.OWNER, ids.REWARDS_CONTROLLER]).contract_address
         context.rewards_controller_1 = deploy_contract("./contracts/rewards/base/rewards_controller.cairo", [ids.EMISSION_MANAGER]).contract_address
         context.rewards_controller_2 = deploy_contract("./contracts/rewards/base/rewards_controller.cairo", [ids.EMISSION_MANAGER]).contract_address
+        context.emission_manager = deploy_contract("./contracts/rewards/base/emission_manager.cairo", [ids.OWNER, context.rewards_controller_1]).contract_address
     %}
     return ()
 end
@@ -38,34 +36,66 @@ end
 @external
 func test_constructor{syscall_ptr : felt*, range_check_ptr}():
     alloc_locals
-    let (local emission_manager, local __, local ___) = get_contract_addresses()
+    let (
+        local emission_manager, local expected_rewards_controller, local __
+    ) = get_contract_addresses()
 
-    let (reward_controller) = IEmissionManager.get_rewards_controller(
+    let (rewards_controller) = IEmissionManager.get_rewards_controller(
         contract_address=emission_manager
     )
 
-    assert reward_controller = REWARDS_CONTROLLER
+    assert rewards_controller = expected_rewards_controller
 
+    return ()
+end
+
+@external
+func test_configure_assets{}():
+    return ()
+end
+
+@external
+func test_set_transfer_strategy{}():
+    return ()
+end
+
+@external
+func test_set_reward_oracle{}():
+    return ()
+end
+
+@external
+func test_set_emission_per_second{}():
+    return ()
+end
+
+@external
+func test_set_claimer{}():
     return ()
 end
 
 @external
 func test_set_rewards_controller{syscall_ptr : felt*, range_check_ptr}():
     alloc_locals
-    let (local emission_manager, local __, local rewards_controller_2) = get_contract_addresses()
-    let (previous_reward_controller) = IEmissionManager.get_rewards_controller(
-        contract_address=emission_manager
-    )
+    let (
+        local emission_manager, local rewards_controller_1, local rewards_controller_2
+    ) = get_contract_addresses()
 
+    %{ stop_prank_owner = start_prank(caller_address=ids.OWNER, target_contract_address=ids.emission_manager) %}
     IEmissionManager.set_rewards_controller(
         contract_address=emission_manager, rewards_controller_=rewards_controller_2
     )
+    %{ stop_prank_owner() %}
 
     let (new_reward_controller) = IEmissionManager.get_rewards_controller(
         contract_address=emission_manager
     )
-
     assert new_reward_controller = rewards_controller_2
+
+    %{ expect_revert(error_message="Ownable") %}
+    IEmissionManager.set_rewards_controller(
+        contract_address=emission_manager, rewards_controller_=rewards_controller_2
+    )
 
     return ()
 end
@@ -73,17 +103,24 @@ end
 @external
 func test_set_emission_admin{syscall_ptr : felt*, range_check_ptr}():
     alloc_locals
-    let (local emission_manager, local __, local __) = get_contract_addresses()
+    let (local emission_manager, local __, local rewards_controller) = get_contract_addresses()
 
+    %{ stop_prank_owner = start_prank(caller_address=ids.OWNER, target_contract_address=ids.emission_manager) %}
     IEmissionManager.set_emission_admin(
-        contract_address=emission_manager, reward=REWARD_1, admin=EMISSION_ADMIN
+        contract_address=emission_manager, reward=rewards_controller, admin=EMISSION_ADMIN
     )
+    %{ stop_prank_owner() %}
 
     let (new_admin) = IEmissionManager.get_emission_admin(
-        contract_address=emission_manager, reward=REWARD_1
+        contract_address=emission_manager, reward=rewards_controller
     )
 
     assert new_admin = EMISSION_ADMIN
+
+    %{ expect_revert(error_message="Ownable") %}
+    IEmissionManager.set_emission_admin(
+        contract_address=emission_manager, reward=rewards_controller, admin=EMISSION_ADMIN
+    )
 
     return ()
 end
