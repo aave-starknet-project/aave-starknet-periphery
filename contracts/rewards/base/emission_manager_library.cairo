@@ -52,28 +52,51 @@ namespace EmissionManager:
         return ()
     end
 
-    func configure_assets{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}():
+    func configure_assets{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
+        config : felt
+    ):
         # TODO
-        # Needs an oracle.
+        # Should check the sender is emission admin of each reward
+        # contained in the config
+        # And call reward controllers function.
         return ()
     end
 
     func set_transfer_strategy{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-        reward : felt
+        reward : felt, transfer_strategy : felt
     ):
         assert_only_emission_admin(reward)
         # TODO
+        # Call reward controllers function.
         return ()
     end
 
-    func set_reward_oracle{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}():
+    func set_reward_oracle{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
+        reward : felt, reward_oracle : felt
+    ):
+        assert_only_emission_admin(reward)
         # TODO
+        # Call reward controllers function.
+        return ()
+    end
+
+    func set_distribution_end{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
+        asset : felt, reward : felt, new_distribution_end : felt
+    ):
+        assert_only_emission_admin(reward)
+        # TODO
+        # Call reward controllers function.
         return ()
     end
 
     func set_emission_per_second{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-        ):
+        asset : felt, rewards : felt, new_emissions_per_second : felt
+    ):
         # TODO
+        # Should check the sender is emission admin of each reward
+        # contained in the config
+        # Should use same helper from configure_assets
+        # And call reward controllers function.
         return ()
     end
 
