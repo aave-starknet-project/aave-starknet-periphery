@@ -22,14 +22,12 @@ func __setup__{syscall_ptr : felt*, range_check_ptr}():
 end
 
 func get_contract_addresses() -> (
-    emission_manager : felt,
-    rewards_controller_1 : felt,
-    rewards_controller_2 : felt
+    emission_manager : felt, rewards_controller_1 : felt, rewards_controller_2 : felt
 ):
     tempvar emission_manager
     tempvar rewards_controller_1
     tempvar rewards_controller_2
-    %{ 
+    %{
         ids.emission_manager = context.emission_manager
         ids.rewards_controller_1 = context.rewards_controller_1
         ids.rewards_controller_2 = context.rewards_controller_2
@@ -42,27 +40,34 @@ func test_constructor{syscall_ptr : felt*, range_check_ptr}():
     alloc_locals
     let (local emission_manager, local __, local ___) = get_contract_addresses()
 
-    let (reward_controller) = IEmissionManager.get_rewards_controller(contract_address = emission_manager)
+    let (reward_controller) = IEmissionManager.get_rewards_controller(
+        contract_address=emission_manager
+    )
 
     assert reward_controller = REWARDS_CONTROLLER
 
-    return()
+    return ()
 end
 
 @external
 func test_set_rewards_controller{syscall_ptr : felt*, range_check_ptr}():
     alloc_locals
     let (local emission_manager, local __, local rewards_controller_2) = get_contract_addresses()
-    let (previous_reward_controller) = IEmissionManager.get_rewards_controller(contract_address = emission_manager)
-    
-    # Is Ownable working...?
-    IEmissionManager.set_rewards_controller(contract_address = emission_manager, rewards_controller_ = rewards_controller_2)
-    
-    let (new_reward_controller) = IEmissionManager.get_rewards_controller(contract_address = emission_manager)
+    let (previous_reward_controller) = IEmissionManager.get_rewards_controller(
+        contract_address=emission_manager
+    )
+
+    IEmissionManager.set_rewards_controller(
+        contract_address=emission_manager, rewards_controller_=rewards_controller_2
+    )
+
+    let (new_reward_controller) = IEmissionManager.get_rewards_controller(
+        contract_address=emission_manager
+    )
 
     assert new_reward_controller = rewards_controller_2
 
-    return()
+    return ()
 end
 
 @external
@@ -70,11 +75,15 @@ func test_set_emission_admin{syscall_ptr : felt*, range_check_ptr}():
     alloc_locals
     let (local emission_manager, local __, local __) = get_contract_addresses()
 
-    IEmissionManager.set_emission_admin(contract_address = emission_manager, reward = REWARD_1, admin = EMISSION_ADMIN)
+    IEmissionManager.set_emission_admin(
+        contract_address=emission_manager, reward=REWARD_1, admin=EMISSION_ADMIN
+    )
 
-    let (new_admin) = IEmissionManager.get_emission_admin(contract_address = emission_manager, reward = REWARD_1)
+    let (new_admin) = IEmissionManager.get_emission_admin(
+        contract_address=emission_manager, reward=REWARD_1
+    )
 
     assert new_admin = EMISSION_ADMIN
 
-    return()
+    return ()
 end

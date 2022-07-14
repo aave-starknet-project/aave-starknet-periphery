@@ -12,7 +12,8 @@ end
 
 namespace RewardsDistributor:
     func set_emission_manager{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-            emission_manager_ : felt):
+        emission_manager_ : felt
+    ):
         let (current_emission_manager) = emission_manager.read()
         with_attr error_message("Already initialized"):
             assert current_emission_manager = 0
@@ -22,7 +23,7 @@ namespace RewardsDistributor:
     end
 
     func get_emission_manager{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-            ) -> (address : felt):
+        ) -> (address : felt):
         let (emission_manager_) = emission_manager.read()
         return (emission_manager_)
     end
@@ -30,7 +31,8 @@ namespace RewardsDistributor:
     # @dev Configure the assets for a specific emission
     # @param assetsConfigInput The array of each asset configuration
     func configure_assets{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-            config_input_len, config_input : RewardsDataTypes.RewardsConfigInput*):
+        config_input_len, config_input : RewardsDataTypes.RewardsConfigInput*
+    ):
         return ()
     end
 end

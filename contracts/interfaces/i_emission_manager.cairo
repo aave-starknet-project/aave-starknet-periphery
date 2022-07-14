@@ -15,7 +15,7 @@ namespace IEmissionManager:
     # Ask why it was done this way. (underscore)
     func set_rewards_controller(rewards_controller_ : felt):
     end
-    func set_emission_admin(reward : felt, admin: felt):
+    func set_emission_admin(reward : felt, admin : felt):
     end
     func get_rewards_controller() -> (rewards_controller_ : felt):
     end
