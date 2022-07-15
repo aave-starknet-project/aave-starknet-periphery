@@ -20,11 +20,11 @@ end
 #
 
 @storage_var
-func _emission_admins(reward : felt) -> (admin : felt):
+func EmissionManager_emission_admins(reward : felt) -> (admin : felt):
 end
 
 @storage_var
-func _rewards_controller() -> (address : felt):
+func EmissionManager_rewards_controller() -> (address : felt):
 end
 
 namespace EmissionManager:
@@ -33,7 +33,7 @@ namespace EmissionManager:
     func assert_only_emission_admin{
         syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr
     }(reward : felt):
-        let (emission_admin) = _emission_admins.read(reward)
+        let (emission_admin) = EmissionManager_emission_admins.read(reward)
         with_attr error_message("Only emission admin"):
             let (caller) = get_caller_address()
             assert caller = emission_admin
@@ -47,7 +47,7 @@ namespace EmissionManager:
         owner : felt, rewards_controller : felt
     ):
         Ownable.initializer(owner)
-        _rewards_controller.write(rewards_controller)
+        EmissionManager_rewards_controller.write(rewards_controller)
 
         return ()
     end
@@ -104,7 +104,7 @@ namespace EmissionManager:
         _user : felt, _claimer : felt
     ):
         Ownable.assert_only_owner()
-        let (reward_controller_address) = _rewards_controller.read()
+        let (reward_controller_address) = EmissionManager_rewards_controller.read()
         IRewardsController.set_claimer(
             contract_address=reward_controller_address, user=_user, claimer=_claimer
         )
@@ -112,11 +112,11 @@ namespace EmissionManager:
     end
 
     func set_rewards_controller{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-        rewards_controller_ : felt
+        rewards_controller : felt
     ):
         Ownable.assert_only_owner()
 
-        _rewards_controller.write(rewards_controller_)
+        EmissionManager_rewards_controller.write(rewards_controller)
 
         return ()
     end
@@ -126,8 +126,8 @@ namespace EmissionManager:
     ):
         Ownable.assert_only_owner()
 
-        let (old_admin) = _emission_admins.read(reward)
-        _emission_admins.write(reward, admin)
+        let (old_admin) = EmissionManager_emission_admins.read(reward)
+        EmissionManager_emission_admins.write(reward, admin)
 
         emission_admin_updated.emit(old_admin=old_admin, new_admin=admin)
 
@@ -138,14 +138,14 @@ namespace EmissionManager:
 
     func get_rewards_controller{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
         ) -> (res : felt):
-        let (res) = _rewards_controller.read()
+        let (res) = EmissionManager_rewards_controller.read()
         return (res)
     end
 
     func get_emission_admin{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
         reward : felt
     ) -> (res : felt):
-        let (res) = _emission_admins.read(reward)
+        let (res) = EmissionManager_emission_admins.read(reward)
         return (res)
     end
 

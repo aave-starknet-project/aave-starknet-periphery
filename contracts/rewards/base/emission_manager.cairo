@@ -32,7 +32,7 @@ end
 func configure_assets{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
     config : felt
 ):
-    EmissionManager.configure_assets()
+    EmissionManager.configure_assets(config)
     return ()
 end
 
@@ -41,7 +41,7 @@ end
 func set_transfer_strategy{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
     reward : felt, transfer_strategy : felt
 ):
-    EmissionManager.set_transfer_strategy(reward)
+    EmissionManager.set_transfer_strategy(reward, transfer_strategy)
     return ()
 end
 

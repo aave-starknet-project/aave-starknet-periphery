@@ -83,7 +83,7 @@ func test_set_rewards_controller{syscall_ptr : felt*, range_check_ptr}():
 
     %{ stop_prank_owner = start_prank(caller_address=ids.OWNER, target_contract_address=ids.emission_manager) %}
     IEmissionManager.set_rewards_controller(
-        contract_address=emission_manager, rewards_controller_=rewards_controller_2
+        contract_address=emission_manager, rewards_controller=rewards_controller_2
     )
     %{ stop_prank_owner() %}
 
@@ -94,7 +94,7 @@ func test_set_rewards_controller{syscall_ptr : felt*, range_check_ptr}():
 
     %{ expect_revert(error_message="Ownable") %}
     IEmissionManager.set_rewards_controller(
-        contract_address=emission_manager, rewards_controller_=rewards_controller_2
+        contract_address=emission_manager, rewards_controller=rewards_controller_2
     )
 
     return ()
