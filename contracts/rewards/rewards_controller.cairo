@@ -1,11 +1,12 @@
 %lang starknet
 
-from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.bool import TRUE
+from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.starknet.common.syscalls import get_caller_address
-from contracts.rewards.base.rewards_distributor import RewardsDistributor
-from contracts.rewards.base.rewards_controller_library import RewardsController
+
+from contracts.rewards.rewards_distributor import RewardsDistributor
+from contracts.rewards.rewards_controller_library import RewardsController
 from contracts.types.rewards_data import RewardsDataTypes
 
 func only_emission_manager{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}():

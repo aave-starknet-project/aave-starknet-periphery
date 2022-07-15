@@ -7,7 +7,7 @@ const EMISSION_MANAGER = 6
 
 @view
 func __setup__{syscall_ptr : felt*, range_check_ptr}():
-    %{ context.rewards_controller = deploy_contract("./contracts/rewards/base/rewards_controller.cairo", [ids.EMISSION_MANAGER]).contract_address %}
+    %{ context.rewards_controller = deploy_contract("./contracts/rewards/rewards_controller.cairo", [ids.EMISSION_MANAGER]).contract_address %}
     return ()
 end
 

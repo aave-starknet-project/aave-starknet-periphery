@@ -1,11 +1,12 @@
 %lang starknet
 
-from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.bool import TRUE
-from contracts.types.rewards_data import RewardsDataTypes
-from contracts.interfaces.i_scaled_balance_token import IScaledBalanceToken
+from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.math import assert_lt
+
+from contracts.interfaces.i_scaled_balance_token import IScaledBalanceToken
+from contracts.types.rewards_data import RewardsDataTypes
 
 @storage_var
 func transfer_strategy(reward_address : felt) -> (address : felt):

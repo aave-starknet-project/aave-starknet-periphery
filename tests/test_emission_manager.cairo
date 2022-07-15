@@ -12,9 +12,9 @@ const EMISSION_MANAGER = 444
 @view
 func __setup__{syscall_ptr : felt*, range_check_ptr}():
     %{
-        context.rewards_controller_1 = deploy_contract("./contracts/rewards/base/rewards_controller.cairo", [ids.EMISSION_MANAGER]).contract_address
-        context.rewards_controller_2 = deploy_contract("./contracts/rewards/base/rewards_controller.cairo", [ids.EMISSION_MANAGER]).contract_address
-        context.emission_manager = deploy_contract("./contracts/rewards/base/emission_manager.cairo", [ids.OWNER, context.rewards_controller_1]).contract_address
+        context.rewards_controller_1 = deploy_contract("./contracts/rewards/rewards_controller.cairo", [ids.EMISSION_MANAGER]).contract_address
+        context.rewards_controller_2 = deploy_contract("./contracts/rewards/rewards_controller.cairo", [ids.EMISSION_MANAGER]).contract_address
+        context.emission_manager = deploy_contract("./contracts/rewards/emission_manager.cairo", [ids.OWNER, context.rewards_controller_1]).contract_address
     %}
     return ()
 end
