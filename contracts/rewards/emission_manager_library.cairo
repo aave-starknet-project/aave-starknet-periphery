@@ -4,6 +4,7 @@ from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.starknet.common.syscalls import get_caller_address
 
 from openzeppelin.access.ownable import Ownable
+from onlydust.stream.default_implementation import stream
 
 from contracts.interfaces.i_rewards_controller import IRewardsController
 
@@ -150,4 +151,22 @@ namespace EmissionManager:
     end
 
     # Internals
+
+    func _validate_emission_admins{
+        syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr
+    }(rewards_len : felt, rewards : felt*):
+        stream.foreach(_validate_emission_admin_wrapper, rewards_len, rewards)
+        return ()
+    end
+
+    func _validate_emission_admin_wrapper{
+        syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr
+    }(index : felt, el : felt*):
+        let (emission_admin) = EmissionManager_emission_admins.read(el)
+        # Value to pointer
+        with_attr error_message("Sender is not emission admin of pool: {el}"):
+            assert_only_emission_admin(emission_admin)
+        end
+        return ()
+    end
 end
