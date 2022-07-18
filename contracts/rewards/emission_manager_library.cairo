@@ -1,10 +1,13 @@
 %lang starknet
 
+from starkware.cairo.common.alloc import alloc
+from starkware.cairo.common.memcpy import memcpy
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.starknet.common.syscalls import get_caller_address
 
 from openzeppelin.access.ownable import Ownable
 from onlydust.stream.default_implementation import stream
+from onlydust.stream.generic import generic
 
 from contracts.interfaces.i_rewards_controller import IRewardsController
 from contracts.types.rewards_data import RewardsDataTypes
@@ -58,10 +61,16 @@ namespace EmissionManager:
         config_len : felt, config : RewardsDataTypes.RewardsConfigInput*
     ):
         # TODO
-        # Should check the sender is emission admin of each reward
-        # contained in the config
-        # And call reward controllers function.
-        _validate_emission_admins(config_len, config)
+        # Call reward controllers function.
+        alloc_locals
+
+        let (temp_rewards : felt*) = alloc()
+
+        let (local __, local ___, local rewards_len, local rewards) = _get_rewards_from_config(
+            config_len, config, 0, temp_rewards
+        )
+
+        _validate_emission_admins(rewards_len, rewards)
         return ()
     end
 
@@ -154,25 +163,45 @@ namespace EmissionManager:
 
     # Internals
 
+    func _get_rewards_from_config{
+        syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr
+    }(
+        config_len : felt,
+        config : RewardsDataTypes.RewardsConfigInput*,
+        rewards_len : felt,
+        rewards : felt*,
+    ) -> (
+        config_len : felt,
+        config : RewardsDataTypes.RewardsConfigInput*,
+        rewards_len : felt,
+        rewards : felt*,
+    ):
+        if config_len == 0:
+            return (0, &config[0], rewards_len, rewards)
+        end
+
+        let config_value = config[0]
+
+        memcpy(&rewards[rewards_len], &config_value.reward_address, 1)
+
+        return _get_rewards_from_config(
+            config_len - 1, &config[rewards_len + 1], rewards_len + 1, rewards
+        )
+    end
+
     func _validate_emission_admins{
         syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr
-    }(config_len : felt, config : RewardsDataTypes.RewardsConfigInput*):
-        stream.foreach_struct(
-            _validate_emission_admin_wrapper,
-            config_len,
-            config,
-            RewardsDataTypes.RewardsConfigInput.SIZE,
-        )
+    }(rewards_len : felt, rewards : felt*):
+        stream.foreach(_validate_emission_admin_wrapper, rewards_len, rewards)
         return ()
     end
 
     func _validate_emission_admin_wrapper{
         syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr
-    }(index : felt, el : RewardsDataTypes.RewardsConfigInput*):
-        let reward_address = el.reward_address
-
-        with_attr error_message("Sender is not emission admin of pool: {reward_address}."):
-            assert_only_emission_admin(reward_address)
+    }(index : felt, el : felt*):
+        let reward = [el]
+        with_attr error_message("Sender is not emission admin of pool: {reward}."):
+            assert_only_emission_admin(reward)
         end
         return ()
     end

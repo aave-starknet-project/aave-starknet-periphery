@@ -36,18 +36,24 @@ func get_contract_addresses() -> (
     return (emission_manager, rewards_controller_1, rewards_controller_2)
 end
 
-func get_config_structs() -> (
-    config1 : RewardsDataTypes.RewardsConfigInput*, config2 : RewardsDataTypes.RewardsConfigInput*
+func get_config_struct_array() -> (
+    config_len : felt, config : RewardsDataTypes.RewardsConfigInput*
 ):
     alloc_locals
     let (
         local emission_manager, local rewards_controller_1, local rewards_controller_2
     ) = get_contract_addresses()
 
+    local config_len = 2
     local config1 : RewardsDataTypes.RewardsConfigInput* = new RewardsDataTypes.RewardsConfigInput(emission_per_second=Uint256(0, 0), total_supply=Uint256(100, 0), distribution_end=222, asset_address=333, reward_address=rewards_controller_1, transfer_strategy=321, reward_oracle=888)
     local config2 : RewardsDataTypes.RewardsConfigInput* = new RewardsDataTypes.RewardsConfigInput(emission_per_second=Uint256(0, 0), total_supply=Uint256(100, 0), distribution_end=223, asset_address=334, reward_address=rewards_controller_2, transfer_strategy=322, reward_oracle=889)
 
-    return (config1, config2)
+    let (config : RewardsDataTypes.RewardsConfigInput*) = alloc()
+
+    assert config[0] = [config1]
+    assert config[1] = [config2]
+
+    return (config_len, config)
 end
 
 @external
@@ -82,18 +88,11 @@ func test_configure_assets{syscall_ptr : felt*, range_check_ptr}():
     )
     %{ stop_prank_owner() %}
 
-    let (local config1, local config2) = get_config_structs()
-    let (config : RewardsDataTypes.RewardsConfigInput*) = alloc()
-    assert config[0] = [config1]
-    assert config[1] = [config2]
-
-    let config_1 = config[0]
-    let config_2 = config[1]
+    let (local config_len, local config) = get_config_struct_array()
 
     %{ stop_prank_owner = start_prank(caller_address=ids.EMISSION_ADMIN, target_contract_address=ids.emission_manager) %}
-
     IEmissionManager.configure_assets(
-        contract_address=emission_manager, config_len=2, config=config
+        contract_address=emission_manager, config_len=config_len, config=config
     )
     %{ stop_prank_owner() %}
 
