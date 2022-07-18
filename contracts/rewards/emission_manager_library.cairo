@@ -157,7 +157,12 @@ namespace EmissionManager:
     func _validate_emission_admins{
         syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr
     }(config_len : felt, config : RewardsDataTypes.RewardsConfigInput*):
-        stream.foreach(_validate_emission_admin_wrapper, config_len, config)
+        stream.foreach_struct(
+            _validate_emission_admin_wrapper,
+            config_len,
+            config,
+            RewardsDataTypes.RewardsConfigInput.SIZE,
+        )
         return ()
     end
 
