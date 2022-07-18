@@ -166,7 +166,7 @@ namespace EmissionManager:
     }(index : felt, el : RewardsDataTypes.RewardsConfigInput*):
         let reward_address = el.reward_address
 
-        with_attr error_message("Sender is not emission admin of pool: {reward_address}"):
+        with_attr error_message("Sender is not emission admin of pool: {reward_address}."):
             assert_only_emission_admin(reward_address)
         end
         return ()

@@ -44,8 +44,16 @@ func get_config_structs() -> (
         local emission_manager, local rewards_controller_1, local rewards_controller_2
     ) = get_contract_addresses()
 
+    %{ print("Rewards 1:", ids.rewards_controller_1) %}
+    %{ print("Rewards 2:", ids.rewards_controller_2) %}
+
     local config1 : RewardsDataTypes.RewardsConfigInput* = new RewardsDataTypes.RewardsConfigInput(emission_per_second=Uint256(0, 0), total_supply=Uint256(100, 0), distribution_end=222, asset_address=333, reward_address=rewards_controller_1, transfer_strategy=321, reward_oracle=888)
     local config2 : RewardsDataTypes.RewardsConfigInput* = new RewardsDataTypes.RewardsConfigInput(emission_per_second=Uint256(0, 0), total_supply=Uint256(100, 0), distribution_end=223, asset_address=334, reward_address=rewards_controller_2, transfer_strategy=322, reward_oracle=889)
+
+    %{
+        print("Reward1 in struct", ids.config1.reward_address)
+        print("Reward2 in struct", ids.config2.reward_address)
+    %}
 
     return (config1, config2)
 end
@@ -88,6 +96,7 @@ func test_configure_assets{syscall_ptr : felt*, range_check_ptr}():
     assert config[1] = [config2]
 
     %{ stop_prank_owner = start_prank(caller_address=ids.EMISSION_ADMIN, target_contract_address=ids.emission_manager) %}
+    %{ print("Caller: ", ids.EMISSION_ADMIN) %}
     IEmissionManager.configure_assets(
         contract_address=emission_manager, config_len=2, config=config
     )
