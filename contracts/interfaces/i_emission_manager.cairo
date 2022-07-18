@@ -1,8 +1,10 @@
 %lang starknet
 
+from contracts.types.rewards_data import RewardsDataTypes
+
 @contract_interface
 namespace IEmissionManager:
-    func configure_assets(config : felt):
+    func configure_assets(config_len : felt, config : RewardsDataTypes.RewardsConfigInput*):
     end
 
     func set_transfer_strategy(reward : felt, transfer_strategy : felt):

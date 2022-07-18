@@ -1,8 +1,10 @@
 %lang starknet
 
+from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 
 from contracts.interfaces.i_emission_manager import IEmissionManager
+from contracts.types.rewards_data import RewardsDataTypes
 
 const OWNER = 111
 const REWARDS_CONTROLLER = 222
@@ -50,27 +52,43 @@ func test_constructor{syscall_ptr : felt*, range_check_ptr}():
 end
 
 @external
-func test_configure_assets{}():
+func test_configure_assets{syscall_ptr : felt*, range_check_ptr}():
+    alloc_locals
+    let (
+        local emission_manager, local rewards_controller_1, local rewards_controller_2
+    ) = get_contract_addresses()
+
+    # Generate RewardsDataTypes.RewardsConfigInput*
+    let (config : RewardsDataTypes.RewardsConfigInput*) = alloc()
+    assert config[0].reward_address = rewards_controller_1
+    assert config[1].reward_address = rewards_controller_2
+
+    %{ stop_prank_owner = start_prank(caller_address=ids.OWNER, target_contract_address=ids.emission_manager) %}
+    IEmissionManager.configure_assets(
+        contract_address=emission_manager, config_len=2, config=config
+    )
+    %{ stop_prank_owner() %}
+
     return ()
 end
 
 @external
-func test_set_transfer_strategy{}():
+func test_set_transfer_strategy{syscall_ptr : felt*, range_check_ptr}():
     return ()
 end
 
 @external
-func test_set_reward_oracle{}():
+func test_set_reward_oracle{syscall_ptr : felt*, range_check_ptr}():
     return ()
 end
 
 @external
-func test_set_emission_per_second{}():
+func test_set_emission_per_second{syscall_ptr : felt*, range_check_ptr}():
     return ()
 end
 
 @external
-func test_set_claimer{}():
+func test_set_claimer{syscall_ptr : felt*, range_check_ptr}():
     return ()
 end
 

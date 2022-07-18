@@ -7,6 +7,7 @@ from openzeppelin.access.ownable import Ownable
 from onlydust.stream.default_implementation import stream
 
 from contracts.interfaces.i_rewards_controller import IRewardsController
+from contracts.types.rewards_data import RewardsDataTypes
 
 #
 # Events
@@ -54,12 +55,13 @@ namespace EmissionManager:
     end
 
     func configure_assets{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-        config : felt
+        config_len : felt, config : RewardsDataTypes.RewardsConfigInput*
     ):
         # TODO
         # Should check the sender is emission admin of each reward
         # contained in the config
         # And call reward controllers function.
+        _validate_emission_admins(config_len, config)
         return ()
     end
 
@@ -154,17 +156,17 @@ namespace EmissionManager:
 
     func _validate_emission_admins{
         syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr
-    }(rewards_len : felt, rewards : felt*):
-        stream.foreach(_validate_emission_admin_wrapper, rewards_len, rewards)
+    }(config_len : felt, config : RewardsDataTypes.RewardsConfigInput*):
+        stream.foreach(_validate_emission_admin_wrapper, config_len, config)
         return ()
     end
 
     func _validate_emission_admin_wrapper{
         syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr
-    }(index : felt, el : felt*):
-        let (emission_admin) = EmissionManager_emission_admins.read(el)
+    }(index : felt, el : RewardsDataTypes.RewardsConfigInput*):
+        let (emission_admin) = EmissionManager_emission_admins.read(el.reward_address)
         # Value to pointer
-        with_attr error_message("Sender is not emission admin of pool: {el}"):
+        with_attr error_message("Sender is not emission admin of pool: {el.reward_address}"):
             assert_only_emission_admin(emission_admin)
         end
         return ()

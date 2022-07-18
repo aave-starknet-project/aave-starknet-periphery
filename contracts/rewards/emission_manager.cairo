@@ -3,6 +3,7 @@
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 
 from contracts.rewards.emission_manager_library import EmissionManager
+from contracts.types.rewards_data import RewardsDataTypes
 
 @constructor
 func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
@@ -27,12 +28,11 @@ func get_emission_admin{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_
     return (emission_admin)
 end
 
-# config is RewardsDataTypes.RewardsConfigInput[], needs to receive length, also, recursion
 @external
 func configure_assets{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-    config : felt
+    config_len : felt, config : RewardsDataTypes.RewardsConfigInput*
 ):
-    EmissionManager.configure_assets(config)
+    EmissionManager.configure_assets(config_len, config)
     return ()
 end
 
