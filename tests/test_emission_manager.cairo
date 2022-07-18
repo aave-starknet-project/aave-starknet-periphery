@@ -2,6 +2,7 @@
 
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.cairo_builtins import HashBuiltin
+from starkware.cairo.common.uint256 import Uint256
 
 from contracts.interfaces.i_emission_manager import IEmissionManager
 from contracts.types.rewards_data import RewardsDataTypes
@@ -35,6 +36,20 @@ func get_contract_addresses() -> (
     return (emission_manager, rewards_controller_1, rewards_controller_2)
 end
 
+func get_config_structs() -> (
+    config1 : RewardsDataTypes.RewardsConfigInput*, config2 : RewardsDataTypes.RewardsConfigInput*
+):
+    alloc_locals
+    let (
+        local emission_manager, local rewards_controller_1, local rewards_controller_2
+    ) = get_contract_addresses()
+
+    local config1 : RewardsDataTypes.RewardsConfigInput* = new RewardsDataTypes.RewardsConfigInput(emission_per_second=Uint256(0, 0), total_supply=Uint256(100, 0), distribution_end=222, asset_address=333, reward_address=rewards_controller_1, transfer_strategy=321, reward_oracle=888)
+    local config2 : RewardsDataTypes.RewardsConfigInput* = new RewardsDataTypes.RewardsConfigInput(emission_per_second=Uint256(0, 0), total_supply=Uint256(100, 0), distribution_end=223, asset_address=334, reward_address=rewards_controller_2, transfer_strategy=322, reward_oracle=889)
+
+    return (config1, config2)
+end
+
 @external
 func test_constructor{syscall_ptr : felt*, range_check_ptr}():
     alloc_locals
@@ -58,12 +73,21 @@ func test_configure_assets{syscall_ptr : felt*, range_check_ptr}():
         local emission_manager, local rewards_controller_1, local rewards_controller_2
     ) = get_contract_addresses()
 
-    # Generate RewardsDataTypes.RewardsConfigInput*
-    let (config : RewardsDataTypes.RewardsConfigInput*) = alloc()
-    assert config[0].reward_address = rewards_controller_1
-    assert config[1].reward_address = rewards_controller_2
-
     %{ stop_prank_owner = start_prank(caller_address=ids.OWNER, target_contract_address=ids.emission_manager) %}
+    IEmissionManager.set_emission_admin(
+        contract_address=emission_manager, reward=rewards_controller_1, admin=EMISSION_ADMIN
+    )
+    IEmissionManager.set_emission_admin(
+        contract_address=emission_manager, reward=rewards_controller_2, admin=EMISSION_ADMIN
+    )
+    %{ stop_prank_owner() %}
+
+    let (local config1, local config2) = get_config_structs()
+    let (config : RewardsDataTypes.RewardsConfigInput*) = alloc()
+    assert config[0] = [config1]
+    assert config[1] = [config2]
+
+    %{ stop_prank_owner = start_prank(caller_address=ids.EMISSION_ADMIN, target_contract_address=ids.emission_manager) %}
     IEmissionManager.configure_assets(
         contract_address=emission_manager, config_len=2, config=config
     )

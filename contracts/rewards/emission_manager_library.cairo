@@ -164,10 +164,10 @@ namespace EmissionManager:
     func _validate_emission_admin_wrapper{
         syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr
     }(index : felt, el : RewardsDataTypes.RewardsConfigInput*):
-        let (emission_admin) = EmissionManager_emission_admins.read(el.reward_address)
-        # Value to pointer
-        with_attr error_message("Sender is not emission admin of pool: {el.reward_address}"):
-            assert_only_emission_admin(emission_admin)
+        let reward_address = el.reward_address
+
+        with_attr error_message("Sender is not emission admin of pool: {reward_address}"):
+            assert_only_emission_admin(reward_address)
         end
         return ()
     end
