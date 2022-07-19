@@ -16,7 +16,13 @@ namespace IEmissionManager:
     func set_distribution_end(asset : felt, reward : felt, new_distribution_end : felt):
     end
 
-    func set_emission_per_second(asset : felt, rewards : felt, new_emissions_per_second : felt):
+    func set_emission_per_second(
+        asset : felt,
+        rewards_len : felt,
+        rewards : felt*,
+        new_emissions_per_second_len : felt,
+        new_emissions_per_second : felt*,
+    ):
     end
 
     func set_claimer(user : felt, claimer : felt):

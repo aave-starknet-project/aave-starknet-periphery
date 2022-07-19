@@ -102,24 +102,30 @@ namespace EmissionManager:
     end
 
     func set_emission_per_second{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-        asset : felt, rewards : felt, new_emissions_per_second : felt
+        asset : felt,
+        rewards_len : felt,
+        rewards : felt*,
+        new_emissions_per_second_len : felt,
+        new_emissions_per_second : felt*,
     ):
         # TODO
-        # Should check the sender is emission admin of each reward
-        # contained in the config
-        # Should use same helper from configure_assets
-        # And call reward controllers function.
+        # Call reward controllers function.
+        _validate_emission_admins(rewards_len, rewards)
         return ()
     end
 
     func set_claimer{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-        _user : felt, _claimer : felt
+        user : felt, claimer : felt
     ):
         Ownable.assert_only_owner()
+
         let (reward_controller_address) = EmissionManager_rewards_controller.read()
-        IRewardsController.set_claimer(
-            contract_address=reward_controller_address, user=_user, claimer=_claimer
-        )
+
+        # TODO
+        # Properly implement set_claimer in reward
+        # IRewardsController.set_claimer(
+        #     contract_address=reward_controller_address, user=user, claimer=claimer
+        # )
         return ()
     end
 

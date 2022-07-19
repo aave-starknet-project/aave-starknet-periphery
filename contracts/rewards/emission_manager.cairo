@@ -66,9 +66,15 @@ end
 # new_emissions_per_second an array of uint88, why? needs to receive length
 @external
 func set_emission_per_second{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-    asset : felt, rewards : felt, new_emissions_per_second : felt
+    asset : felt,
+    rewards_len : felt,
+    rewards : felt*,
+    new_emissions_per_second_len : felt,
+    new_emissions_per_second : felt*,
 ):
-    EmissionManager.set_emission_per_second(asset, rewards, new_emissions_per_second)
+    EmissionManager.set_emission_per_second(
+        asset, rewards_len, rewards, new_emissions_per_second_len, new_emissions_per_second
+    )
     return ()
 end
 
