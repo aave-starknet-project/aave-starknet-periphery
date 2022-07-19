@@ -62,8 +62,6 @@ func set_distribution_end{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, rang
     return ()
 end
 
-# rewards is an array of addresses, needs to receive length
-# new_emissions_per_second an array of uint88, why? needs to receive length
 @external
 func set_emission_per_second{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
     asset : felt,
