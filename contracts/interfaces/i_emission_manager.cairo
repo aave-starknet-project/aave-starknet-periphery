@@ -28,6 +28,9 @@ namespace IEmissionManager:
     func set_claimer(user : felt, claimer : felt):
     end
 
+    func set_emission_manager(emission_manager : felt):
+    end
+
     func set_rewards_controller(rewards_controller : felt):
     end
 

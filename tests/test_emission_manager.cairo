@@ -256,6 +256,23 @@ func test_set_emission_per_second{syscall_ptr : felt*, range_check_ptr}():
 end
 
 @external
+func test_set_emission_manager{syscall_ptr : felt*, range_check_ptr}():
+    alloc_locals
+    let (local emission_manager, local __, local __) = get_contract_addresses()
+
+    %{ stop_prank_owner = start_prank(caller_address=ids.OWNER, target_contract_address=ids.emission_manager) %}
+    IEmissionManager.set_emission_manager(
+        contract_address=emission_manager, emission_manager=EMISSION_MANAGER
+    )
+    %{ stop_prank_owner() %}
+
+    # TODO
+    # Assert from get_emission manager from rewards_controller.
+
+    return ()
+end
+
+@external
 func test_set_claimer{syscall_ptr : felt*, range_check_ptr}():
     alloc_locals
     let (

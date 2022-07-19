@@ -87,6 +87,14 @@ func set_claimer{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_p
 end
 
 @external
+func set_emission_manager{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
+    emission_manager : felt
+):
+    EmissionManager.set_emission_manager(emission_manager)
+    return ()
+end
+
+@external
 func set_rewards_controller{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
     rewards_controller : felt
 ):

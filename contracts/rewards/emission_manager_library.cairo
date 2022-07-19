@@ -114,6 +114,15 @@ namespace EmissionManager:
         return ()
     end
 
+    func set_emission_manager{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
+        emission_manager
+    ):
+        Ownable.assert_only_owner()
+        # TODO
+        # Properly implement set_emission_manager in reward
+        return ()
+    end
+
     func set_claimer{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
         user : felt, claimer : felt
     ):
