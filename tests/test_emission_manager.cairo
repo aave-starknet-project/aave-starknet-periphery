@@ -279,20 +279,6 @@ func test_set_claimer{syscall_ptr : felt*, range_check_ptr}():
         local emission_manager, local rewards_controller_1, local rewards_controller_2
     ) = get_contract_addresses()
 
-    # TODO
-    # Use when set_claimer properly implemented in rewards_controller
-    # %{ stop_prank_owner = start_prank(caller_address=ids.OWNER, target_contract_address=ids.emission_manager) %}
-    # IEmissionManager.set_rewards_controller(
-    #     contract_address=emission_manager, rewards_controller=rewards_controller_2
-    # )
-    # %{ stop_prank_owner() %}
-
-    # %{ stop_prank_owner = start_prank(caller_address=ids.EMISSION_ADMIN, target_contract_address=ids.emission_manager) %}
-    # IEmissionManager.set_emission_admin(
-    #     contract_address=emission_manager, reward=rewards_controller_2, admin=OWNER
-    # )
-    # %{ stop_prank_owner() %}
-
     %{ stop_prank_owner = start_prank(caller_address=ids.OWNER, target_contract_address=ids.emission_manager) %}
     IEmissionManager.set_claimer(contract_address=emission_manager, user=USER, claimer=CLAIMER)
     %{ stop_prank_owner() %}
