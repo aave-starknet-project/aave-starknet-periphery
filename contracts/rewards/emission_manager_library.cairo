@@ -6,8 +6,6 @@ from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.starknet.common.syscalls import get_caller_address
 
 from openzeppelin.access.ownable import Ownable
-from onlydust.stream.default_implementation import stream
-from onlydust.stream.generic import generic
 
 from contracts.interfaces.i_rewards_controller import IRewardsController
 from contracts.types.rewards_data import RewardsDataTypes
@@ -60,17 +58,9 @@ namespace EmissionManager:
     func configure_assets{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
         config_len : felt, config : RewardsDataTypes.RewardsConfigInput*
     ):
+        _validate_config_assets(config_len, config)
         # TODO
         # Call reward controllers function.
-        alloc_locals
-
-        let (temp_rewards : felt*) = alloc()
-
-        let (local __, local ___, local rewards_len, local rewards) = _get_rewards_from_config(
-            config_len, config, 0, temp_rewards
-        )
-
-        _validate_emission_admins(rewards_len, rewards)
         return ()
     end
 
@@ -110,7 +100,7 @@ namespace EmissionManager:
     ):
         # TODO
         # Call reward controllers function.
-        _validate_emission_admins(rewards_len, rewards)
+        _validate_rewards(rewards_len, rewards)
         return ()
     end
 
@@ -178,46 +168,35 @@ namespace EmissionManager:
 
     # Internals
 
-    func _get_rewards_from_config{
-        syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr
-    }(
-        config_len : felt,
-        config : RewardsDataTypes.RewardsConfigInput*,
-        rewards_len : felt,
-        rewards : felt*,
-    ) -> (
-        config_len : felt,
-        config : RewardsDataTypes.RewardsConfigInput*,
-        rewards_len : felt,
-        rewards : felt*,
+    func _validate_config_assets{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
+        config_len : felt, config : RewardsDataTypes.RewardsConfigInput*
     ):
+        alloc_locals
+
         if config_len == 0:
-            return (0, config, rewards_len, rewards)
+            return ()
         end
 
-        let config_value = config[0]
+        let input = config[0]
+        assert_only_emission_admin(input.reward_address)
 
-        memcpy(&rewards[rewards_len], &config_value.reward_address, 1)
-
-        return _get_rewards_from_config(
-            config_len - 1,
-            config + RewardsDataTypes.RewardsConfigInput.SIZE,
-            rewards_len + 1,
-            rewards,
+        return _validate_config_assets(
+            config_len - 1, config + RewardsDataTypes.RewardsConfigInput.SIZE
         )
     end
 
-    func _validate_emission_admins{
-        syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr
-    }(rewards_len : felt, rewards : felt*):
-        stream.foreach(_validate_emission_admin_wrapper, rewards_len, rewards)
-        return ()
-    end
+    func _validate_rewards{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
+        rewards_len : felt, rewards : felt*
+    ):
+        alloc_locals
 
-    func _validate_emission_admin_wrapper{
-        syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr
-    }(index : felt, reward : felt*):
-        assert_only_emission_admin([reward])
-        return ()
+        if rewards_len == 0:
+            return ()
+        end
+
+        let reward = [rewards]
+        assert_only_emission_admin(reward)
+
+        return _validate_rewards(rewards_len - 1, rewards + 1)
     end
 end
