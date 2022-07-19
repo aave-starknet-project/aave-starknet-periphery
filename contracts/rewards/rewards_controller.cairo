@@ -10,19 +10,19 @@ from contracts.rewards.rewards_controller_library import RewardsController
 from contracts.types.rewards_data import RewardsDataTypes
 
 func only_emission_manager{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}():
-    let (emission_manager_) = RewardsDistributor.get_emission_manager()
+    let (emission_manager) = RewardsDistributor.get_emission_manager()
     with_attr error_message("Only emission manager"):
         let (caller) = get_caller_address()
-        assert caller = emission_manager_
+        assert caller = emission_manager
     end
     return ()
 end
 
 @constructor
 func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-    emission_manager_ : felt
+    emission_manager : felt
 ):
-    RewardsDistributor.set_emission_manager(emission_manager_)
+    RewardsDistributor.set_emission_manager(emission_manager)
     return ()
 end
 
@@ -123,7 +123,7 @@ end
 
 @view
 func get_emission_manager{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}() -> (
-    emission_manager_ : felt
+    emission_manager : felt
 ):
     let (emission_manager) = RewardsDistributor.get_emission_manager()
     return (emission_manager)
