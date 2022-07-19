@@ -6,13 +6,13 @@ libs_path = "lib"
 
 ["protostar.contracts"]
 rewards_controller = [
-    "./contracts/rewards/base/rewards_controller.cairo",
+    "./contracts/rewards/rewards_controller.cairo",
 ]
 emission_manager = [
-    "./contracts/rewards/base/emission_manager.cairo",
+    "./contracts/rewards/emission_manager.cairo",
 ]
 rewards_distributor = [
-    "./contracts/rewards/base/rewards_distributor.cairo",
+    "./contracts/rewards/rewards_distributor.cairo",
 ]
 
 ["protostar.shared_command_configs"]
