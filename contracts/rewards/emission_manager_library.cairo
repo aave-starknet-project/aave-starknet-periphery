@@ -39,7 +39,7 @@ namespace EmissionManager:
         syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr
     }(reward : felt):
         let (emission_admin) = EmissionManager_emission_admins.read(reward)
-        with_attr error_message("Only emission admin"):
+        with_attr error_message("Only emission admin can modify pool: {reward}"):
             let (caller) = get_caller_address()
             assert caller = emission_admin
         end
@@ -192,7 +192,7 @@ namespace EmissionManager:
         rewards : felt*,
     ):
         if config_len == 0:
-            return (0, &config[0], rewards_len, rewards)
+            return (0, config, rewards_len, rewards)
         end
 
         let config_value = config[0]
@@ -200,7 +200,10 @@ namespace EmissionManager:
         memcpy(&rewards[rewards_len], &config_value.reward_address, 1)
 
         return _get_rewards_from_config(
-            config_len - 1, &config[rewards_len + 1], rewards_len + 1, rewards
+            config_len - 1,
+            config + RewardsDataTypes.RewardsConfigInput.SIZE,
+            rewards_len + 1,
+            rewards,
         )
     end
 
@@ -213,11 +216,8 @@ namespace EmissionManager:
 
     func _validate_emission_admin_wrapper{
         syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr
-    }(index : felt, el : felt*):
-        let reward = [el]
-        with_attr error_message("Sender is not emission admin of pool: {reward}."):
-            assert_only_emission_admin(reward)
-        end
+    }(index : felt, reward : felt*):
+        assert_only_emission_admin([reward])
         return ()
     end
 end
