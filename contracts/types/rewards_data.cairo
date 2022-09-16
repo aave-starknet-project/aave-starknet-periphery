@@ -2,14 +2,14 @@
 
 from starkware.cairo.common.uint256 import Uint256
 
-namespace RewardsDataTypes:
-    struct RewardsConfigInput:
-        member emission_per_second : Uint256
-        member total_supply : Uint256
-        member distribution_end : felt
-        member asset_address : felt
-        member reward_address : felt
-        member transfer_strategy : felt
-        member reward_oracle : felt
-    end
-end
+namespace RewardsDataTypes {
+    struct RewardsConfigInput {
+        emission_per_second: Uint256,
+        total_supply: Uint256,
+        distribution_end: felt,
+        asset_address: felt,
+        reward_address: felt,
+        transfer_strategy: felt,
+        reward_oracle: felt,
+    }
+}
