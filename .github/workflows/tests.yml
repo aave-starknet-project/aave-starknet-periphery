@@ -4,21 +4,29 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - "**.md"
+      - ".github/docs/**"
   pull_request:
+    paths-ignore:
+      - "**.md"
+
+env:
+  PROTOSTAR_VERSION: "0.4.2"
 
 jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.7"]
+        python-version: ["3.9"]
     steps:
       - uses: actions/checkout@v3
 
       - name: Install Protostar
         shell: bash
         run: |
-          curl -L https://raw.githubusercontent.com/software-mansion/protostar/master/install.sh | bash
+          curl -L https://raw.githubusercontent.com/software-mansion/protostar/master/install.sh | bash  -s -- -v $PROTOSTAR_VERSION
 
       - name: Install submodules
         shell: bash
